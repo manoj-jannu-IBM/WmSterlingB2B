@@ -1,0 +1,8 @@
+#Converted to AesEcbPkcs5t for package: WmSterlingB2B
+#Mon Apr 27 05:11:05 GMT 2026
+default.encryptor=AesEcbPkcs5
+master.password.class=com.webmethods.sc.security.passman.impl.masterpw.AesEcbP5MasterPassword
+master.password.field.fileName=packages/WmSterlingB2B/config/ae256mpwd.dat
+master.password.field.repeatLimit=4
+outbound.password.store.field.fileName=packages/WmSterlingB2B/config/txnPassStore.dat
+sanity.encryptor=AesEcbPkcs5

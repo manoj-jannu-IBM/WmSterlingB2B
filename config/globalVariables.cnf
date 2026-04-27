@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<IDataXMLCoder version="1.0">
+  <record javaclass="com.wm.data.ISMemDataImpl">
+    <array name="globalVariables" type="record" depth="1">
+      <record javaclass="com.wm.data.ISMemDataImpl">
+        <value name="key">sterling.endpoint.url</value>
+        <value name="value">https://prod380995.m-yyz-c1.int.ipaas.preprod.automation.ibm.com</value>
+        <value name="isSecure">false</value>
+      </record>
+      <record javaclass="com.wm.data.ISMemDataImpl">
+        <value name="key">sterling.endpoint.clientid</value>
+        <value name="value">AKIA3PRVS5SWJP7NIVK6</value>
+        <value name="isSecure">false</value>
+      </record>
+      <record javaclass="com.wm.data.ISMemDataImpl">
+        <value name="key">sterling.bucket</value>
+        <value name="value">cf-templates-1hebj29py5u7t-eu-central-1</value>
+        <value name="isSecure">false</value>
+      </record>
+      <record javaclass="com.wm.data.ISMemDataImpl">
+        <value name="key">sterling.endpoint.TenantAPIKey</value>
+        <value name="value">gvhandle.sterling.endpoint.TenantAPIKey</value>
+        <value name="isSecure">true</value>
+      </record>
+      <record javaclass="com.wm.data.ISMemDataImpl">
+        <value name="key">sterling.endpoint.ProjectID</value>
+        <value name="value">flc917fd0605a240dcaca5617661d77679</value>
+        <value name="isSecure">false</value>
+      </record>
+    </array>
+  </record>
+</IDataXMLCoder>

@@ -1,0 +1,335 @@
+openapi: 3.0.0
+info:
+  title: webMethods B2Bi SaaS Integration API
+  description: REST API for integrating with webMethods B2Bi SaaS services. This API
+    provides endpoints for processing payload data and workflow notifications from
+    webMethods B2Bi SaaS Payload Service and Workflow Finished Service.
+  contact:
+    name: WebMethod Integration Team
+    url: https://webMethodIntegration.com
+    email: bharat.kumar@bm.com
+  license:
+    name: Internal Use
+    url: https://www.ibm.com/in-en/license
+  version: 1.0.0
+servers:
+- url: http://localhost:8080/
+  description: Development Server
+tags:
+- name: webMethods B2Bi SaaS Integration
+  description: APIs for webMethods B2Bi SaaS integration services
+paths:
+  /api/v1/wm/sterling/b2bisaas/webhook:
+    post:
+      tags:
+      - webMethods B2Bi SaaS Integration
+      summary: Data sent from B2Bi SaaS to webMethods B2Bi SaaS webhook/Trigger
+      description: Data sent from B2Bi SaaS to webMethods B2Bi SaaS webhook/Trigger
+      operationId: processWebhook
+      parameters:
+      - name: x-instance-api-key
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/WebhookServiceRequest'
+        required: true
+      responses:
+        "200":
+          description: webhook Trigger processed successfully
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResponseMsg'
+  /api/v1/wm/sterling/b2bisaas/payload:
+    post:
+      tags:
+      - webMethods B2Bi SaaS Integration
+      summary: Process Payload Service Request
+      description: Receives payload data from webMethods B2Bi SaaS Payload Service.
+        The service handles workflow execution tracking and processes base64 encoded
+        object payloads.
+      operationId: processPayload
+      parameters:
+      - name: x-ibm-client-id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: x-ibm-client-secret
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/PayloadServiceRequest'
+        required: true
+      responses:
+        "200":
+          description: Payload processed successfully
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResponseMsg'
+  /api/v1/wm/sterling/b2bisaas/log:
+    post:
+      tags:
+      - webMethods B2Bi SaaS Integration
+      summary: Event logged successfully
+      description: Event logged successfully
+      operationId: processLogging
+      parameters:
+      - name: x-ibm-client-id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: x-ibm-client-secret
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/LoggingServiceRequest'
+        required: true
+      responses:
+        "200":
+          description: Event logged successfully
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResponseMsg'
+  /api/v1/wm/sterling/b2bisaas/flow/finished:
+    post:
+      tags:
+      - webMethods B2Bi SaaS Integration
+      summary: Process Workflow Finished Notification
+      description: Receives workflow completion notification from webMethods B2Bi
+        SaaS Workflow Finished Service. Updates workflow status for B2Bi SaaS visibility
+        tool (InFlight) with Success/Failure status corresponding to Green/Red status
+        lights.
+      operationId: processWorkflowFinished
+      parameters:
+      - name: x-ibm-client-id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: x-ibm-client-secret
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/WorkflowFinishedRequest'
+        required: true
+      responses:
+        "200":
+          description: Workflow status updated successfully
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResponseMsg'
+components:
+  schemas:
+    Envelope:
+      required:
+      - businessAlias
+      - commandMessage
+      - processingFlags
+      - trackingEventCode
+      type: object
+      properties:
+        company:
+          type: string
+          description: It's optional
+        businessAlias:
+          type: string
+          description: businessAlias should be provided by B2Bi SaaS
+        processingFlags:
+          type: array
+          description: processingFlags should contain 6 values from pf1 to pf6
+          items:
+            type: string
+            description: processingFlags should contain 6 values from pf1 to pf6
+        commandMessage:
+          type: string
+          description: "In the future, for large command message, this can be an object\
+            \ in a COS bucket reference"
+        documentCode:
+          type: string
+          description: This is a unique id generated by B2Bi SaaS. And need to be
+            send back when flow finished
+        trackingEventCode:
+          type: string
+          description: It should be usefull to store Parent event code
+      description: Envelope should be provided by B2Bi SaaS
+    WebhookServiceRequest:
+      required:
+      - envelope
+      - payload
+      type: object
+      properties:
+        envelope:
+          $ref: '#/components/schemas/Envelope'
+        payload:
+          type: string
+          description: "In the future, for large payloads, this can be an object in\
+            \ a COS bucket reference (base64 encoded payload)"
+      description: Data sent from B2Bi SaaS to webMethods B2Bi SaaS webhook/Trigger
+        (UTF-8 encoded)
+    ResponseMsg:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Response message describing the operation result
+          example: Okay
+      description: Standard API response structure
+    PayloadServiceRequest:
+      required:
+      - commandMessage
+      - payload
+      - processingFlags
+      - trackingEventCode
+      - workflowContextId
+      - workflowExecutionId
+      type: object
+      properties:
+        workflowExecutionId:
+          type: string
+          description: "Unique identifier for workflow execution, generated by the\
+            \ service"
+          example: wf-exec-123456789
+        workflowContextId:
+          type: string
+          description: "Workflow context identifier, previously set to document code"
+          example: doc-context-987654321
+        payload:
+          type: string
+          description: service does base64 encoding
+          example: eyJkYXRhIjoidGVzdCIsInR5cGUiOiJkb2N1bWVudCJ9
+        company:
+          type: string
+          description: If present
+          example: ibm-12345-abc
+        businessAlias:
+          type: string
+        processingFlags:
+          type: array
+          description: processingFlags should contain 6 values from pf1 to pf6
+          items:
+            type: string
+            description: processingFlags should contain 6 values from pf1 to pf6
+        commandMessage:
+          type: string
+          description: "In the future, for large command message, this can be an object\
+            \ in a COS bucket reference"
+        documentCode:
+          type: string
+          description: This is a unique id generated by B2Bi SaaS. And need to be
+            send back when flow finished
+        trackingEventCode:
+          type: string
+          description: It should be usefull to store Parent event code
+      description: Request payload for webMethods B2Bi SaaS Payload Service (UTF-8
+        encoded)
+    LoggingServiceRequest:
+      required:
+      - logMessage
+      - status
+      - workflowContextId
+      - workflowExecutionId
+      type: object
+      properties:
+        workflowExecutionId:
+          type: string
+          description: Workflow execution ID provided by webMethods B2Bi SaaS
+          example: wf-exec-12345-abc
+        workflowContextId:
+          type: string
+          description: Workflow context ID (previously set to document Code)
+          example: doc-context-67890
+        logMessage:
+          type: string
+          description: Log message describing the workflow step or event
+          example: Processing document transformation
+        status:
+          type: string
+          description: Execution status of the workflow step
+          example: SUCCESS | FAILURE | EXECUTING
+          enum:
+          - SUCCESS
+          - FAILURE
+          - EXECUTING
+        detailedMessage:
+          type: string
+          description: Detailed error message (only present if step execution failed)
+          example: "Document validation failed: Missing required field 'customerCode'"
+      description: Request payload for webMethods B2Bi SaaS Payload Service (UTF-8
+        encoded)
+    WorkflowFinishedRequest:
+      required:
+      - commandMessage
+      - processingFlags
+      - status
+      - trackingEventCode
+      - workflowContextId
+      - workflowExecutionId
+      type: object
+      properties:
+        workflowExecutionId:
+          type: string
+          description: Unique identifier for workflow execution
+          example: wf-exec-123456789
+        workflowContextId:
+          type: string
+          description: Workflow context identifier
+          example: doc-context-987654321
+        status:
+          pattern: ^(Success|Failure)$
+          type: string
+          description: Workflow execution status. Success/Failure corresponds to Green/Red
+            status in B2Bi SaaS InFlight visibility tool
+          example: Success
+          enum:
+          - Success
+          - Failure
+        company:
+          type: string
+          description: If present
+          example: ibm-12345-abc
+        businessAlias:
+          type: string
+        processingFlags:
+          type: array
+          description: processingFlags should contain 6 values from pf1 to pf6
+          items:
+            type: string
+            description: processingFlags should contain 6 values from pf1 to pf6
+        commandMessage:
+          type: string
+          description: "In the future, for large command message, this can be an object\
+            \ in a COS bucket reference"
+        documentCode:
+          type: string
+          description: This is a unique id generated by B2Bi SaaS. And need to be
+            send back when flow finished
+        trackingEventCode:
+          type: string
+          description: It should be usefull to store Parent event code
+      description: Request payload for webMethods B2Bi SaaS Workflow Finished Service
+        (UTF-8 encoded)

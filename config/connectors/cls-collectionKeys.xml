@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<services>
+    <cloudstreamsCollectionKeys serviceName="WmCloudStreams.RestVS">
+        <servicesKeys>
+            <keyDetails collectionKey="wm.sterling.b2b.priv.s3:getObject" connectorServiceName="wm.sterling.b2b.priv.s3:getObject"/>
+            <keyDetails collectionKey="wm.sterling.b2b.priv.s3:putObject" connectorServiceName="wm.sterling.b2b.priv.s3:putObject"/>
+        </servicesKeys>
+    </cloudstreamsCollectionKeys>
+</services>
